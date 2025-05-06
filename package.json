@@ -3,14 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start-frontend": "cd frontend-ui && npm start",
-    "start-backend": "cd backend-server && npm run build && npm run dev",
-    "start-all": "concurrently \"npm run start-frontend\" \"npm run start-backend\""
-  },
+  "start-frontend": "cd frontend-ui && npm start",
+  "start-backend": "cd backend-server && npm run build && npm run dev",
+  "start-all": "concurrently \"npm run start-frontend\" \"npm run start-backend\"",
+  "build": "cd frontend-ui && npm install && npm run build"
+},
   "keywords": [],
   "author": "",
-  "license": "ISC",
   "description": "",
   "devDependencies": {
     "@types/cors": "^2.8.17",

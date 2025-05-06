@@ -1,0 +1,79 @@
+# FROM node:20-alpine AS deps
+
+# WORKDIR /app
+
+# # Copy package files for dependency installation
+# COPY package*.json ./
+
+# # Install dependencies with caching
+# RUN npm ci --network-timeout=100000 --no-fund --loglevel=error
+
+# # Build stage
+# FROM node:20-alpine AS builder
+
+# WORKDIR /app
+
+# # Copy deps from previous stage
+# COPY --from=deps /app/node_modules ./node_modules
+# COPY . .
+
+# # Development runtime
+# FROM node:20-alpine AS runner
+
+# WORKDIR /app
+
+# # Copy necessary files from builder
+# COPY --from=builder /app/node_modules ./node_modules
+# COPY --from=builder /app/package*.json ./
+# COPY --from=builder /app/public ./public
+# COPY --from=builder /app/src ./src
+# COPY --from=builder /app/tsconfig.json ./
+
+# # Set environment variables for development
+# ENV WATCHPACK_POLLING=true
+# ENV CHOKIDAR_USEPOLLING=true
+# ENV NODE_ENV=development
+# ENV DISABLE_ESLINT_PLUGIN=true
+# ENV CI=false
+# ENV REACT_APP_Maps_API_KEY=${REACT_APP_Maps_API_KEY:-AIzaSyB9tUsFp0xB4S9Cnx-5T1f4OeRHYuT6w1A}
+# ENV REACT_APP_GOOGLE_MAP_ID=${REACT_APP_GOOGLE_MAP_ID:-f8fd127fbfbe12aa}
+# ENV REACT_APP_API_URL=${REACT_APP_API_URL:-http://backend-server:5004}
+
+# # Expose port for React development server
+# EXPOSE 3000
+
+# # Start the application in development mode
+# CMD ["npm", "start"] 
+
+FROM node:20-alpine
+ 
+ WORKDIR /app
+ 
+ # Copy package files
+ COPY package*.json ./
+ 
+ # Install dependencies
+ RUN npm ci --network-timeout=100000 --no-fund --loglevel=error
+ 
+ # Copy the rest of the application code
+ COPY . .
+ 
+ # Expose port for React development server
+ EXPOSE 3000
+ 
+# Set environment variables for development
+ENV WATCHPACK_POLLING=true
+ENV CHOKIDAR_USEPOLLING=true
+ENV NODE_ENV=development
+ENV DISABLE_ESLINT_PLUGIN=true
+ENV CI=false
+ENV REACT_APP_Maps_API_KEY=${REACT_APP_Maps_API_KEY:-AIzaSyB9tUsFp0xB4S9Cnx-5T1f4OeRHYuT6w1A}
+ENV REACT_APP_GOOGLE_MAP_ID=${REACT_APP_GOOGLE_MAP_ID:-f8fd127fbfbe12aa}
+ENV REACT_APP_API_URL=${REACT_APP_API_URL:-http://backend-server:5004}
+ENV WDS_SOCKET_HOST=127.0.0.1
+ENV WDS_SOCKET_PORT=3000
+ENV DANGEROUSLY_DISABLE_HOST_CHECK=true
+ENV PORT=3000
+ 
+ # Start the application in development mode
+ CMD ["npm", "start"] 

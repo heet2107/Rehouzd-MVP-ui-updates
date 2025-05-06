@@ -4,7 +4,7 @@ import {
   Container,
   Heading,
   Text,
-  Stack,
+  // Remove unused Stack import
   Flex,
   Button,
   VStack,
@@ -177,4 +177,4 @@ const PricingPage: React.FC = () => {
   );
 };
 
-export default PricingPage; 
+export default PricingPage;

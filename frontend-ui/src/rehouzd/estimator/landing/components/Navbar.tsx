@@ -6,7 +6,7 @@ import {
   Button,
   Image,
   HStack,
-  Link,
+  // Remove unused Link import
   Container,
   useDisclosure,
   Drawer,
@@ -23,13 +23,17 @@ import {
   MenuItem,
   Avatar,
   Text,
-  Icon,
+  // Remove unused Icon import
   useToast
 } from '@chakra-ui/react';
 import { HamburgerIcon } from '@chakra-ui/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AuthModal from '../../auth/AuthModal';
-import { FiDollarSign, FiBarChart2 } from 'react-icons/fi';
+import { 
+  // Remove unused icons
+  // FiDollarSign, 
+  // FiBarChart2 
+} from 'react-icons/fi';
 import { setUserData, clearUserData } from '../../store/userSlice';
 import { removeProperty } from '../../store/propertySlice';
 import { useAppDispatch } from '../../store/hooks';
@@ -37,11 +41,14 @@ import { clearAddressData } from "../../store/addressSlice";
 import { IconType } from 'react-icons';
 
 // Define icon types more explicitly
+// Comment out unused NavItem interface
+/*
 interface NavItem {
   name: string;
   icon: IconType;
   path: string;
 }
+*/
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -58,12 +65,12 @@ const Navbar = () => {
   const [showSignUp, setShowSignUp] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | undefined>(undefined);
 
-  // Navbar styles using brand colors from the theme
-  const navBg = 'background.primary'; // white
-  const navShadow = 'sm';
-  const navTextColor = 'text.primary'; // gray.700
-  const activeNavItemBg = 'tag.light'; // light green for active items
-  const activeNavItemColor = 'brand.500'; // brand color
+  // Comment out unused style variables
+  // const navBg = 'background.primary'; // white
+  // const navShadow = 'sm';
+  // const navTextColor = 'text.primary'; // gray.700
+  // const activeNavItemBg = 'tag.light'; // light green for active items
+  // const activeNavItemColor = 'brand.500'; // brand color
 
   // Menu styling
   const menuBg = 'background.primary'; // white
@@ -81,7 +88,7 @@ const Navbar = () => {
     }
   }, []);
   
-  // Check for plan selection in URL query params
+  // Check for plan selection in URL query params and add the missing dependency
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const plan = queryParams.get('plan');
@@ -97,7 +104,7 @@ const Navbar = () => {
       // Remove the query parameter to avoid reopening the modal on refresh
       navigate(location.pathname, { replace: true });
     }
-  }, [location.search, navigate]);
+  }, [location.search, navigate, location.pathname]); // Added missing dependency
 
   const onAuthOpen = (plan?: string) => {
     setSelectedPlan(plan);

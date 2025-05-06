@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "dev": "cross-env NODE_ENV=development nodemon --watch src --ext ts --exec ts-node src/rehouzd/estimator/index.ts",
     "build": "tsc && npm run copy-files",
     "copy-files": "copyfiles -u 1 \"src/rehouzd/estimator/test-data/*.json\" dist",

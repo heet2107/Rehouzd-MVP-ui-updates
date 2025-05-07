@@ -18,10 +18,11 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BAC9E7E3C72846F59D90B05F7DB98B03 }}
+          enable-AzPSSession: true
 
       - name: Deploy docker-compose to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'Rehouzd-MVP-Updates'
+          app-name: "Rehouzd-MVP-Updates"
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BAC9E7E3C72846F59D90B05F7DB98B03 }}
-          docker-compose-file: './docker-compose.yml'
+          docker-compose-file: "./docker-compose.yml"

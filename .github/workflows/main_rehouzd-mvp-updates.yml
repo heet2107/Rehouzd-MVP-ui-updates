@@ -1,4 +1,4 @@
-name: Deploy Docker Compose app to Azure Web App for Containers
+name: Deploy Docker Compose App to Azure Web App
 
 on:
   push:
@@ -9,42 +9,19 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Log in to Azure
+      - name: Log in to Azure using publish profile
         uses: azure/login@v1
         with:
-          # This needs to be a service principal JSON credential, not a publish profile
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BAC9E7E3C72846F59D90B05F7DB98B03 }}
 
-      - name: Build and deploy to Azure Web App
+      - name: Deploy docker-compose to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'Rehouzd-MVP-Updates'
-          slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BAC9E7E3C72846F59D90B05F7DB98B03 }}
           docker-compose-file: './docker-compose.yml'
-
-      - name: Set Web App Configuration
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            # Configure the web app to use Docker Compose
-            az webapp config container set \
-              --resource-group YourResourceGroupName \
-              --name Rehouzd-MVP-Updates \
-              --multicontainer-config-type compose \
-              --multicontainer-config-file docker-compose.yml
-            
-            # Set necessary environment variables
-            az webapp config appsettings set \
-              --resource-group YourResourceGroupName \
-              --name Rehouzd-MVP-Updates \
-              --settings \
-                WEBSITES_ENABLE_APP_SERVICE_STORAGE=false \
-                WEBSITES_PORT=3000 \
-                REACT_APP_Maps_API_KEY=${{ secrets.REACT_APP_MAPS_API_KEY }} \
-                REACT_APP_GOOGLE_MAP_ID=${{ secrets.REACT_APP_GOOGLE_MAP_ID }} \
-                REACT_APP_API_URL=/api

@@ -14,19 +14,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-<<<<<<< HEAD
       # Skip the azure/login step as it's not needed when using publish profile
-=======
-      - name: Log in to Azure using publish profile
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BAC9E7E3C72846F59D90B05F7DB98B03 }}
-          enable-AzPSSession: true
->>>>>>> 1b9f0cce99dea1e5e1a8ea628a66bd0534ff115d
 
       - name: Deploy docker-compose to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: "Rehouzd-MVP-Updates"
+          app-name: 'Rehouzd-MVP-Updates'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BAC9E7E3C72846F59D90B05F7DB98B03 }}
-          docker-compose-file: "./docker-compose.yml"
+          docker-compose-file: './docker-compose.yml'

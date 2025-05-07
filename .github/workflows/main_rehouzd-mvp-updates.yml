@@ -14,10 +14,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Log in to Azure using publish profile
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BAC9E7E3C72846F59D90B05F7DB98B03 }}
+      # Skip the azure/login step as it's not needed when using publish profile
 
       - name: Deploy docker-compose to Azure Web App
         uses: azure/webapps-deploy@v3

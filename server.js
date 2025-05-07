@@ -1,40 +1,34 @@
 const express = require('express');
 const path = require('path');
-const cors = require('cors');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Enable CORS
-app.use(cors());
+// Simple middleware for CORS instead of using the cors package
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 // Serve static files from frontend build folder
 app.use(express.static(path.join(__dirname, 'frontend-ui/build')));
 
-// Proxy API requests to backend
-// Assuming your backend is running on port 5004 internally
-app.use('/api', createProxyMiddleware({ 
-  target: 'http://localhost:5004',
-  changeOrigin: true,
-  onError: (err, req, res) => {
-    console.error('Proxy error:', err);
-    res.status(500).send('Proxy error');
-  }
-}));
-
-// Start backend server (alternative approach)
-// Optional if using proxy above. Uncomment if needed.
-/*
-const { exec } = require('child_process');
-const backendProcess = exec('cd backend-server && npm start', (error, stdout, stderr) => {
-  if (error) {
-    console.error(`Backend error: ${error}`);
-    return;
-  }
-  console.log(`Backend stdout: ${stdout}`);
-  console.error(`Backend stderr: ${stderr}`);
+// Simple API endpoint for health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Server is running' });
 });
-*/
+
+// Basic API proxy without http-proxy-middleware
+app.use('/api', (req, res) => {
+  res.status(503).json({ 
+    message: 'Backend API is not connected in this deployment. Please configure the backend separately.',
+    endpoint: req.originalUrl
+  });
+});
 
 // All remaining requests return the React app
 app.get('*', (req, res) => {

@@ -1,4 +1,4 @@
-name: Deploy Docker Compose App to Azure Web App
+name: Build and deploy Node.js app to Azure Web App
 
 on:
   push:
@@ -7,18 +7,77 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build_and_deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # Skip the azure/login step as it's not needed when using publish profile
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
 
-      - name: Deploy docker-compose to Azure Web App
+      - name: Build frontend
+        run: |
+          cd frontend-ui
+          npm ci
+          npm run build
+
+      - name: Prepare deployment package
+        run: |
+          # Create a deployment directory
+          mkdir -p deploy/frontend-ui
+          
+          # Copy the built frontend
+          cp -r frontend-ui/build deploy/frontend-ui/
+          
+          # Create a simple server.js in the deploy directory
+          echo 'const express = require("express");
+          const path = require("path");
+          
+          const app = express();
+          const PORT = process.env.PORT || 8080;
+          
+          // Serve static files from frontend
+          app.use(express.static(path.join(__dirname, "frontend-ui/build")));
+          
+          // Basic API endpoint
+          app.get("/api/health", (req, res) => {
+            res.json({ status: "ok" });
+          });
+          
+          // All other requests go to the React app
+          app.get("*", (req, res) => {
+            res.sendFile(path.join(__dirname, "frontend-ui/build", "index.html"));
+          });
+          
+          app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+          });' > deploy/server.js
+          
+          # Create a minimal package.json for the deployment
+          echo '{
+            "name": "rehouzd-mvp-production",
+            "version": "1.0.0",
+            "main": "server.js",
+            "scripts": {
+              "start": "node server.js"
+            },
+            "dependencies": {
+              "express": "^4.21.2"
+            }
+          }' > deploy/package.json
+          
+          # Install dependencies in the deploy directory
+          cd deploy
+          npm install
+          
+          # Zip everything for deployment
+          zip -r ../release.zip .
+
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'Rehouzd-MVP-Updates'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BAC9E7E3C72846F59D90B05F7DB98B03 }}
-          docker-compose-file: './docker-compose.yml'
+          package: release.zip
